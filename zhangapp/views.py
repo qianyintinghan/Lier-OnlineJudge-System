@@ -113,7 +113,7 @@ def registered(request): # registered
                     user = User.objects.create_user(username,email,password1)
                     user.save()
                     print "teset"
-                    #Gothers.make_avatar(user.username,'static/image/user-avatar/'+str(user.id)+".jpg")
+                    Gothers.copy_avatar(user.id)#Gothers.make_avatar(user.username,'static/image/user-avatar/'+str(user.id)+".jpg")
                     print "test"
                     user = auth.authenticate(username=username, password=password1)
                     auth.login(request, user)

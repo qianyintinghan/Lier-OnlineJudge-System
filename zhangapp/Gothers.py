@@ -2,7 +2,6 @@
 import urllib
 from PIL import Image, ImageFont, ImageDraw
 import re
-import jieba
 import random
 import time
 from Gseting import colors
@@ -15,6 +14,12 @@ def make_avatar(username,addr):
     avatar.text([16, -12],username[0].upper(), font = font)
     image.save(addr)
 
+def copy_avatar(userid):
+    fnew = open('static/image/user-avatar/'+str(userid)+'.jpg','wb')
+    fold = open('static/image/user-avatar/old.jpg','rb')
+    fnew.write(fold.read())
+    fnew.close()
+    fold.close()
 """
 colors:
 purple:    #9B26AF
