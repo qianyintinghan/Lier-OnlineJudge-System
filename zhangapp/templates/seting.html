@@ -8,6 +8,47 @@
   <body>
     {% include "_layout/nav.html" %}
     <div class="container">
+      {% if new == True %}
+      <div class="row">
+        <div class="well col-sm-8">
+          <h4><strong>更换头像</strong></h4>
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+              <input name="avatar" multiple="" type="file">
+              <div class="input-group">
+                <input readonly="" class="form-control" placeholder="Placeholder w/file chooser..." type="text">
+                <span class="input-group-btn input-group-sm">
+                </span>
+              </div>
+            </div>
+            <!--div class="form-group">
+              <label for="inputPassword" class="col-md-2 control-label">avatar</label>
+              <div class="col-md-10">
+                <input type="file" class="form-control" name="avatar" placeholder="avatar" required>
+              </div>
+            </div-->
+            <div style="margin:auto auto;width:200px;">
+              <button type="submit" class="btn btn-raised btn-warning">提交</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      {% else %}
+      {% if OK == True %}
+      <div class="row">
+          <div class="well col-sm-8">
+            <h4><strong>设置成功</strong></h4>
+          </div>
+      </div>
+      {% else %}
+      <div class="row">
+        <div class="well col-sm-8">
+            <h4><strong>未知错误</strong></h4>
+        </div>
+      </div>
+      {% endif %}
+      {% endif %}
     </div>
   </body>
 </html>

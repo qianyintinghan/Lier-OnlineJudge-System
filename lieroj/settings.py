@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+"""
 import djcelery
 djcelery.setup_loader()
 BROKER_URL = 'django://'
@@ -24,7 +25,7 @@ CELERY_TASK_RESULT_EXPIRES = 10
 CELERYD_LOG_FILE = BASE_DIR + "/logs/celery/celery.log"
 CELERYBEAT_LOG_FILE = BASE_DIR + "/logs/celery/beat.log"
 CELERY_ACCEPT_CONTENT = ['pickle', 'json', 'msgpack', 'yaml']
-
+"""
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -52,14 +53,14 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'zhangapp',
     'markdown_deux',
-    'djcelery',
+    #'djcelery',
     'kombu.transport.django',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

@@ -19,6 +19,8 @@ import os
 import Gseting
 import Gothers
 import codecs
+
+from PIL import Image
 # Create your views here.
 
 def index(request):
@@ -63,7 +65,7 @@ def registered(request): # registered
             username  = request.POST.get('username').strip()
             password1 = request.POST.get('password1').strip()
             password2 = request.POST.get('password2').strip()
-            print email,username,password1
+            #print email,username,password1
             error = list()
             sucess = True
             """
@@ -112,9 +114,9 @@ def registered(request): # registered
                 try:
                     user = User.objects.create_user(username,email,password1)
                     user.save()
-                    print "teset"
+                    #print "teset"
                     Gothers.copy_avatar(user.id)#Gothers.make_avatar(user.username,'static/image/user-avatar/'+str(user.id)+".jpg")
-                    print "test"
+                    #print "test"
                     user = auth.authenticate(username=username, password=password1)
                     auth.login(request, user)
                     return render_to_response('registered.html',RequestContext(request, {'success':True,}))
@@ -283,7 +285,28 @@ def reproblem(request):
 
 # glyphicon glyphicon-duplicate copy
 def seting(request):
-    return render_to_response('seting.html',RequestContext(request,{}))
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/')
+    if request.method == "POST":
+        try:
+            reqfile = request.FILES.get("avatar")
+            if not reqfile:
+                print "funny"
+                render_to_response('seting.html',RequestContext(request, {'OK':False}))
+            tempname = 'static/image/temp/'+str(request.user.id)+reqfile.name
+            print tempname
+            destination = open(tempname, 'wb+')
+            for chunk in reqfile.chunks():
+                destination.write(chunk)
+            destination.close()
+            img = Image.open(tempname)
+            img.thumbnail((250,250),Image.ANTIALIAS)
+            img.save("static/image/user-avatar/"+str(request.user.id)+".jpg")
+            return render_to_response('seting.html',RequestContext(request,{'OK':True}))
+        except:
+            print "wtf"
+            return render_to_response('seting.html',RequestContext(request,{'OK':False}))
+    return render_to_response('seting.html',RequestContext(request,{'new':True}))
 
 def repassword(request):
 
