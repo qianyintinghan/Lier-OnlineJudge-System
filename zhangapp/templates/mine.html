@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    {% if user.is_authenticated %}
+    <title>{{ user.username }}的空间</title>
+    {% else %}
+    <title>请先登录Lier OJ</title>
+    {% endif %}
+    {% include "_layout/head.html" %}
+    <style>
+    .center {
+      position: absolute;
+      margin-left: auto;
+      margin-right: auto;
+      width: 417px;
+      overflow: auto;
+      text-align: middle;
+    }
+    </style>
+  </head>
+  <body>
+    {% include "_layout/nav.html" %}
+    <div class="container">
+      {% if other %}
+      {% if nologin %}
+      <div class="well well-lg center">
+        <h2>你还没有登录</h2>
+        <p>登录后即可查看及修改用户信息</p>
+        <a href="/" class="btn btn-default">返回首页</a>
+        <a href="/registered" class="btn btn-raised btn-info">注册</a>
+        <a href="/login" class="btn btn-success">Login Now!</a>
+      </div>
+      {% elif wantuser %}
+      <h3>欢迎{{ user.username }}访问{{ wantuser.username }}的主页</h3>
+      <div >
+        <div class="row">
+          <div class="col-sm-8">
+            <div class="well">
+              <div class="row">
+                <div class="col-sm-4">
+                  <img src="/static/image/user-avatar/{{ wantuser.id }}.jpg" style="clear: both; display: block; margin:auto;width:120px;border-radius:50%;padding-top:13px" />
+                </div>
+                <div class="col-sm-8">
+                  <h2><strong>{{ wantuser.username }}</strong></h2>
+                  <h5><strong>id:</strong>    {{ wantuser.id }}</h5>
+                  <h5><strong>邮箱:</strong>    {{ wantuser.email }}</h5>
+                  <h5><strong>注册时间:</strong>  {{ wantuser.date_joined }}</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      {% else %}
+      <h1>未找到此用户</h1>
+      {% endif %}
+      {% else %}
+      {% if not user.is_authenticated %}
+      <div class="well well-lg center">
+        <h2>你还没有登录</h2>
+        <p>登录后即可查看及修改用户信息</p>
+        <a href="/" class="btn btn-default">返回首页</a>
+        <a href="/registered" class="btn btn-raised btn-info">注册</a>
+        <a href="/login" class="btn btn-success">Login Now!</a>
+      </div>
+      {% else %}
+      <div >
+        <div class="row">
+          <div class="col-sm-8">
+            <div class="well">
+              <div class="row">
+                <div class="col-sm-4">
+                  <img src="/static/image/user-avatar/{{ user.id }}.jpg" style="clear: both; display: block; margin:auto;width:120px;border-radius:50%;padding-top:13px" />
+                </div>
+                <div class="col-sm-8">
+                  <h2><strong>{{ user.username }}</strong></h2>
+                  <h5><strong>id:</strong>    {{ user.id }}</h5>
+                  <h5><strong>邮箱:</strong>    {{ user.email }}</h5>
+                  <h5><strong>注册时间:</strong>  {{ user.date_joined }}</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      {% endif %}
+      {% endif %}
+    </div>
+  </body>
+</html>

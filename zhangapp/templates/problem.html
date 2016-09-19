@@ -1,0 +1,93 @@
+{% load markdown_deux_tags %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{% if problem %}P{{ problem.id }} {{ problem.title }}{% else %}未找到该题目{% endif %}</title>
+    {% include "_layout/head.html" %}
+  </head>
+  <body>
+    {% include "_layout/nav.html" %}
+    <div class="container">
+      {% if problem == None %}
+      <div class="well well-sm row">
+        <h3>404</h3>
+      </div>
+      <h1>未找到该题目</h1>
+      {% else %}
+      <div class="row">
+        <div class="col-sm-9">
+            <div class="well well-sm">
+              <div class="row">
+                <div class="col-sm-10">
+                  <h3><strong> P{{ problem.id }} {{ problem.title }}</strong></h3>
+                </div>
+              </div>
+              <span class="label label-default">默认标签</span>
+            </div>
+            <div class="well well-lg">
+              {% if problem.beijing %}
+              <h4><strong>题目背景</strong></h4>
+              {{ problem.beijing|markdown:'codehilite' }}
+              {% endif %}
+              <h4><strong>题目描述</strong></h4>
+              {{ problem.miaoshu|safe|markdown:'codehilite' }}
+              <h4><strong>输入输出格式</strong></h4>
+              <h5><strong>输入格式</strong></h5>
+              {{ problem.in_gs|markdown:'codehilite' }}
+              <h5><strong>输出格式</strong></h5>
+              {{ problem.out_gs|markdown:'codehilite' }}
+              <h4><strong>样例输入输出</strong></h4>
+              <div class="row">
+                  <div class="col-sm-6">
+                    <h5><strong>输入样例</strong></h5>
+                    <pre>{{ problem.inone }}</pre>
+                  </div>
+                  <div class="col-sm-6">
+                    <h5><strong>输出样例</strong></h5>
+                    <pre>{{ problem.outone }}</pre>
+                  </div>
+              </div>
+              {% if problem.buchong %}
+
+              <h4><strong>说明</strong></h4>
+              {{ problem.buchong|markdown:'codehilite' }}
+              {% endif %}
+            </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="well">
+            <h5><strong>题目贡献人</strong></h5>
+            {% if auth %}
+            <img src="/static/image/user-avatar/{{ auth.id }}.jpg" style="clear: both; display: block; margin:auto;width:130px;border-radius:50%;" />
+            <h3 style="text-align:center"><strong><a href="/user/{{ auth.id }}">{{ auth.username }}</a></strong></h3>
+            {% if user.id == auth.id %}
+            <div class="">
+              <a href="/reproblem/?pid={{ problem.id }}" class="btn btn-raised btn-info" style="width:100%">修改题目</a>
+            </div>
+            {% endif %}
+            {% else %}
+            <img src="/static/image/user-avatar/unknow.png" style="clear: both; display: block; margin:auto;width:130px;border-radius:50%;" />
+            <h3 style="text-align:center"><strong>未知用户</strong></h3>
+            {% endif %}
+          </div>
+          <div class="well">
+            <div class="row">
+              <div class="col-sm-6">
+                <h1 style="text-align:center"><strong>{{ problem.put }}</strong></h1>
+                <h4 style="text-align:center"><strong>提交</strong></h4>
+                <a href="javascript:void(0)" class="btn btn-raised btn-info" style="width:100%;">记录</a>
+              </div>
+              <div class="col-sm-6">
+                <h1 style="text-align:center"><strong>{{ problem.down }}</strong></h1>
+                <h4 style="text-align:center"><strong>通过</strong></h4>
+                <a href="/post/?pid={{ problem.id }}" class="btn btn-raised btn-success" style="width:100%;">提交</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </body>
+</html>
