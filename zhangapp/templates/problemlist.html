@@ -8,13 +8,16 @@
   <body>
     {% include "_layout/nav.html" %}
     <div class="container">
+      {% if NoProblem == True %}
+      <h1><strong>题库暂时没有题目</strong></h1>
+      {% else %}
       <div class="row">
         <div class="col-sm-12">
           {% for problem in pl %}
             <div class="well">
               <div class=" row">
                 <div class="col-sm-4">
-                  <h4><strong>  P{{ problem.id }}   <a href = "/problem?pid={{ problem.id }}">{{ problem.title }}</a></strong></h4>
+                  <h4><strong>  P{{ problem.id }}   <a href = "/problem/?pid={{ problem.id }}">{{ problem.title }}</a></strong></h4>
                 </div>
                 <div class="col-md-4">
                   <span class="label label-default">默认标签</span>
@@ -38,6 +41,7 @@
           </div>
         </div>
       </div>
+      {% endif %}
     </div>
   </body>
 </html>

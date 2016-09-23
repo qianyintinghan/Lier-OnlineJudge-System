@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-SuperManeger = [1,2,3,5]
+SuperManeger = [1,2,3,4,5]
 
 noregistered = ['Update','update','gengxin','syy','SYY','Syy','SYy','ZGX','zgx','Zgx','ZGx','Zhangone','onezhang','Onezhang','张赓鑫','更新']
 

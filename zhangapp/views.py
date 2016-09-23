@@ -15,12 +15,13 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
-import os
 import Gseting
 import Gothers
 import codecs
 
 from PIL import Image
+import hashlib
+import sys,os,time
 # Create your views here.
 
 def index(request):
@@ -119,6 +120,14 @@ def registered(request): # registered
                     #print "test"
                     user = auth.authenticate(username=username, password=password1)
                     auth.login(request, user)
+                    try:
+                        num = Number.objects.get(kind = "User")
+                        num.number += 1;
+                        num.save()
+                    except:
+                        num = Number(kind="User")
+                        num.number = 1
+                        num.save()
                     return render_to_response('registered.html',RequestContext(request, {'success':True,}))
                 except:
                     return render_to_response('registered.html',RequestContext(request, {'error':['wtf'],}))
@@ -144,6 +153,8 @@ def userinfo(request, user_id):
     if user_id == None:
         return render_to_response('mine.html', RequestContext(request, {'other':True,'wantuser':request.user,}))
     else:
+        if user_id == str(request.user.id):
+            return HttpResponseRedirect('/mine/')
         try: #best to use filter
             user = User.objects.get(id = user_id)
             return render_to_response('mine.html', RequestContext(request, {'other':True,'wantuser':user,}))
@@ -152,12 +163,32 @@ def userinfo(request, user_id):
 
 def gmaneger(request):
     if request.user.id in Gseting.SuperManeger:
-        userlist = User.objects.all()
+        raw_page = request.GET.get('page',1)
+        try:
+            page = int(raw_page)
+        except:
+            return HttpResponseRedirect('/gmaneger/?page=1')
+        try:
+            page_count = (Number.objects.get(kind='User').number-1)/15+1
+        except:
+            Number(kind="User").save()
+            page_count = (Number.objects.get(kind='User').number-1)/15+1
+        if page > page_count or page < 1:
+            return HttpResponseRedirect('/gmaneger/?page=1')
+        userlist = User.objects.all()[(page-1)*15:page*15]
+        if page <= page_count:
+            pnext = page
+        else:
+            pnext = page+1
+        if page >= 1:
+            pup = page
+        else:
+            pup = page-1
         #userlist = list()
         #for user in ul:
         #    profile = user.get_profile()
         #    userlist.append([user.id, user.username, user.email, user.last_login, user.date_joined, user.is_superuser, ])
-        return render_to_response('Gmanege.html', RequestContext(request, {'userlist':userlist,}))
+        return render_to_response('Gmanege.html', RequestContext(request, {'userlist':userlist, 'activepage':page, 'pagerange':range(1,page_count+1),'pup':pup,'pnext':pnext,'page_count':page_count,}))
     else:
         return render_to_response('Gmanege.html', RequestContext(request, {'nopurview':True,}))
 
@@ -167,10 +198,16 @@ def problemlist(request):
         page = int(raw_page)
     except:
         return HttpResponseRedirect('/problemlist/?page=1')
-    page_count = (Number.objects.get(kind="Problem").number+1)/20+1
+    try:
+        page_count = (Number.objects.get(kind="Problem").number-1)/15+1
+    except:
+        Number(kind="Problem",number=0).save()
+        page_count = 1
+    if page_count == 0:
+        return render_to_response('problemlist.html', RequestContext(request, {'NoProblem':True}))
     if page > page_count or page < 1 :
         return HttpResponseRedirect('/problemlist/?page=1')
-    pl = Problem.objects.all()[(page-1)*20:page*20]
+    pl = Problem.objects.all()[(page-1)*15:page*15]
     if page <= page_count:
         pnext = page
     else:
@@ -294,14 +331,32 @@ def seting(request):
                 print "funny"
                 render_to_response('seting.html',RequestContext(request, {'OK':False}))
             tempname = 'static/image/temp/'+str(request.user.id)+reqfile.name
-            print tempname
             destination = open(tempname, 'wb+')
             for chunk in reqfile.chunks():
                 destination.write(chunk)
             destination.close()
-            img = Image.open(tempname)
-            img.thumbnail((250,250),Image.ANTIALIAS)
-            img.save("static/image/user-avatar/"+str(request.user.id)+".jpg")
+            f1 = open(tempname, 'rb')
+            fc = f1.read()
+            f1.close()
+            md5code = hashlib.md5(fc).hexdigest()
+            imgtmp = Image.open(tempname)
+            imgtmp = imgtmp.convert('RGB')
+            imgtmp.save('static/image/temp/'+md5code+'.jpg')
+            print tempname
+            os.remove(tempname)
+
+            img = Image.open('static/image/temp/'+md5code+'.jpg')
+            img2 = Image.new('RGB', (350, 350), (255, 255, 255))
+            if img.size[0]>=img.size[1]:
+                w = 350
+                h = (img.size[1]*350)/img.size[0]
+            else:
+                w = (img.size[0]*350)/img.size[1]
+                h = 350
+            img = img.resize((w,h),Image.ANTIALIAS)
+            print (350-w)/2,(350-h)/2,(350-(350-w)/2),(350-(350-h)/2)
+            img2.paste(img,((350-w)/2,(350-h)/2,(350-w)/2+w,(350-h)/2+h))
+            img2.save("static/image/user-avatar/"+str(request.user.id)+".jpg")#img.resize((300,300),Image.ANTIALIAS).save("static/image/user-avatar/"+str(request.user.id)+".jpg")
             return render_to_response('seting.html',RequestContext(request,{'OK':True}))
         except:
             print "wtf"
@@ -320,13 +375,25 @@ def post(request):
         return HttpResponseRedirect('/')
     problem = Problem.objects.get(id = pid)
     if request.method == "GET":
-        return render_to_response('post.html', RequestContext(request, {'problem':problem}))
+        cppname = 'post/'+str(pid)+'/'+str(request.user.id)+'.cpp'
+        #print cppname
+        if os.path.isfile(cppname):
+            f = open(cppname)
+            posted_code = f.read()
+            f.close()
+            posted = True
+        else:
+            posted_code = None
+            posted = False
+        #print posted_code
+        return render_to_response('post.html', RequestContext(request, {'problem':problem,'posted':posted,'posted_code':posted_code,}))
     if request.method == "POST":
         uid = request.user.id
         if not os.path.isdir("post/"+str(pid)):
             os.mkdir("post/"+str(pid))
-        f = codecs.open("post/"+str(pid)+"/"+str(uid)+".cpp","wb",'gb2312')
-        f.write(request.POST.get("code"))
+        #f = codecs.open("post/"+str(pid)+"/"+str(uid)+".cpp","wb",'gb2312')
+        f = open("post/"+str(pid)+"/"+str(uid)+".cpp","wb")
+        f.write(request.POST.get("code").encode('utf-8'))
         f.close()
         problem.put+=1
         problem.save()

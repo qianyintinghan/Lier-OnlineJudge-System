@@ -1,27 +1,30 @@
-/*题号: 9
-//题目: 幻想乡♂早苗
-//用户: LY
-//提交: 3
-//通过: 0
-//提交你的代码*/
 #include<iostream>
 #include<cstring>
 using namespace std;
 int main(){
-	long long t,x=0,y=0,n;
+	long long m,t,x=0,y=0,p,q,n;
 	string s;
 	cin>>s>>t;
 	n=s.size();
-	for(long long i=1;i<=t;i++){
-		if(i==n+1){
-			t-=n;
-			i=1;
+	for(long long i=0;i<n;i++){
+		switch(s[i]){
+			case 'E':x++;break;
+			case 'S':y--;break;
+			case 'W':x--;break;
+			case 'N':y++;break;
 		}
+	}
+	p=x;q=y;
+	m=t/n;
+	x=m*p;
+	y=m*q;
+	m=t%n;
+	for(long long i=1;i<=m;i++){
 		switch(s[i-1]){
-			case 'E':x+=1;break;
-			case 'S':y-=1;break;
-			case 'W':x-=1;break;
-			case 'N':y+=1;break;
+			case 'E':x++;break;
+			case 'S':y--;break;
+			case 'W':x--;break;
+			case 'N':y++;break;
 		}
 	}
 	cout<<x<<" "<<y;

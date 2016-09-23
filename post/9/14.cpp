@@ -1,8 +1,4 @@
-/*题号: 9
-//题目: 幻想乡♂早苗
-//提交: 6
-//通过: 0
-//提交你的代码*/
+/*old:*/
 #include<iostream>
 #include<cstring>
 using namespace std;

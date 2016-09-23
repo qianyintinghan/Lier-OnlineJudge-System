@@ -7,6 +7,7 @@ int main()
 	string s;
 	cin>>s>>T;
 	a=s.length()-1;
+	if(T>a+1){
 	for(int i=0;i<=a;i++)
 	{
 		if(s[i]=='N')
@@ -50,4 +51,29 @@ int main()
 		}
 	}
 	cout<<x<<" "<<y;
+}
+
+	else
+	{
+		for(int i=0;i<=T-1;i++)
+	{
+		if(s[i]=='N')
+		{
+			y++;
+		}
+		if(s[i]=='E')
+		{
+			x++;
+		}
+		if(s[i]=='S')
+		{
+			y--;
+		}
+		if(s[i]=='W')
+		{
+			x--;
+		}
+	}
+	cout<<x<<" "<<y;
+}
 }
